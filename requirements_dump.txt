@@ -1,0 +1,50 @@
+--- Washed.docx ---
+Washed
+¿Qué es?
+Una empresa de lavado de dinero
+¿Cómo funciona?
+Es un intermediario, una pagina web a modo de Tinder(Estilo), donde la empresa publica la cantidad de dinero que quiere lavar. Luego ese dinero se reparte entre 50 empresas aprox. y la empresa se queda con un porcentaje dependiendo del método de pago
+Si reciben Virtual, la empresa se queda 1%
+Si reciben Efectivo, la empresa se queda 0,65%
+Una vez finalizado el periodo de lavado, estas empresas se quedan con el 10% del total (Llega a tu cuenta de banco).
+Dependiendo de que tan grande sea el monto tardaría de un mes a 6 meses.
+¿Cómo se usa la pagina?
+Tiene un login, cargas necesidades, la plata que queres lavar, y las 50 pimes.
+¿Qué diseño de la pagina tendría?
+Seria como un Tinder de las empresas que necesitan lavar dinero y las pimes que lavan
+La pagina se dizfrazada como una pagina de apuestas.
+. Interfaz y Experiencia de Usuario (UI/UX)
+Mecanismo del "Disfraz": ¿Cómo se activa la vista real de la plataforma desde la fachada de apuestas? (Ej. ¿un botón en el footer, un login específico, un patrón visual?).
+En principio no existiría una vista real de la plataforma. Para nuestros clientes o cualquier entidad financiera nosotros somos una empresa de apuestas legítimas. Con tazas de retorno a la apuesta muy desalentadoras con respecto a la competencia para desinsentivar a personas que no tengan intenciones de lavar dinero de apostar en nuestra web.
+Tendría que haber algún disparador, juego específico, monto introducido (por ejemplo que ingresen al juego con $***,125 y que los centavos sean la señar para reconocer a los clientes reales), etc.
+↑ Ahí les toca a ustedes ser los creativos 😉
+Dinámica del Swipe: ¿El cliente desliza manualmente entre perfiles de PYMEs para elegirlas una por una, o la plataforma hace un match automático con las 50 PYMEs una vez ingresado el monto?
+Nosotros seríamos los intermediarios guardando la menor cantidad de información necesaria de cada uno (Sr Turbio → Tintorería → Las Secadoras). Todo el proceso debe ser cifrado y anónimo para las tres partes, así no es rastreable desde ninguno de los eslabones.
+A ustedes les tocaría la parte de ver qué monto pueden ocultar sin levantar sospechas cada Secadora para hacer el cálculo de cuánto se le puede asignar a cada participe. El número de 50 pequeñas empresas fue figurativo, no tenemos ni idea de eso jaja 😅.
+Sr Sucio apuesta, tiene “mala suerte” y pierde dinero (Nuestra comisión 😉). Se le entrega una fecha según el monto para que juegue nuevamente y en su próximo juego la vida le sonríe devolviendole casi todo lo que invirtió al principio.
+Panel de la PYME: ¿Qué interfaz ve la PYME cuando ingresa? ¿Tiene la opción de aceptar o rechazar las asignaciones de dinero que le llegan?
+Como pantalla la PYME nunca llega a tener la plata en su cuenta o por lo menos no es retirable. La persona acepta los “terminos y condiciones” con un monto que puede disimular como ventas ficticias (nadie revisa los pequeños montos). 
+Juega una vez al mes y si tiene pedidos pendientes se le debita en su cuenta el objetivo como saldo pendiente (el número em negativo y en rojo), una vez cumplido el hace la transferencia a la web, juega y gana: cubre la deuda y gana su parte.
+Él no sabe quién está al otro lado nunca. Es el eslabón más débil y por eso el que menos info necesita.
+2. Reglas de Negocio y Lógica Matemática
+Distribución de Fondos: ¿El monto total se divide en 50 partes estrictamente iguales ($2\%$ a cada PYME), o varía según la capacidad o tamaño registrado de la PYME?
+Varía, el cómo asignarlo les toca a ustedes. :v
+Cálculo de Plazos: ¿Cuál es la fórmula o escala exacta para determinar el tiempo de espera? (Ej. ¿De $\$1$ a $\$10.000$ tarda 1 mes, y más de $\$100.000$ tarda 6 meses?).
+Según disponibilidad. Suponiendo 1.000 PYMEs en todo el país, si se intenta lavar a principio del mes habrá más disponibilidad, sino se entra en una lista de espera (esa información debe conocerla quien lava plata).
+En temporada alta, por ejemplo, en Verano es más sencillo y los montos crecen en proporcion al volumen del movimiento de capital.
+Descuento de Comisiones: La PYME se queda con el $10\%$ y la plataforma con el $1\%$ (virtual) o $0,65\%$ (efectivo). ¿Ese $10\%$ de la PYME se le resta al dinero que recibe el cliente al final, o el cliente debe depositarlo por adelantado?
+Se le resta del dinero al cliente. El 1 al 0.65% también es figurativo. Faltaría contemplar mínimos y máximos. 
+El 10% de las PYMEs es sobre la fracción que reciben y no sobre el total. Sin embargo haciendo la suma el cliente rescinde de lo que pone a cambio de limpiarlo, serían los costos de operaciones.
+3. Métodos de Pago y Datos
+Validación de Depósitos: ¿Cómo registra el sistema si el ingreso de dinero fue en "Efectivo" o "Virtual" para aplicar la comisión correcta?
+No sé. 💅🏻
+Perfiles y Roles: ¿Qué datos mínimos se le van a pedir a una PYME para registrarse en la plataforma y aparecer en el sistema de asignación?
+Persona particular que sea capaz de acreditar ser dueño de una empresa. Por ejemplo registrándose con el CUIT de la entidad, pero habría que ver si es posible.
+También así nos aseguramos de no tener más de una persona Secando Ropa en la misma lavandería y que pueda levantar sospechas.
+
+--- Procesos Para El Desarrollo.docx ---
+Phase1 : Stack Tecnológico Recomendado
+Frontend: React / Next.js o Vue.js (para la manipulación rápida del DOM en la transición de fachada).
+Backend: Node.js (Express) o Python (FastAPI/Django) para procesar el algoritmo de reparto.
+Base de Datos: PostgreSQL o SQLite (entorno local).
+Entorno: Localhost o repositorio privado (git).

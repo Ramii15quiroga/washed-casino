@@ -1,0 +1,46 @@
+# Lógica conceptual de distribución
+def calcular_distribucion(monto_total, metodo_pago, pymes_disponibles):
+    # 1. Comisión de la plataforma
+    comision_web = 0.01 if metodo_pago == "Virtual" else 0.0065
+    monto_post_web = monto_total * (1 - comision_web)
+    
+    # 2. Fragmentación según capacidad de PYMEs (no uniforme)
+    monto_restante = monto_post_web
+    asignaciones = []
+    
+    for pyme in pymes_disponibles:
+        fraccion = pyme.capacidad_maxima * random.uniform(0.7, 1.0)
+        comision_pyme = fraccion * 0.10
+        
+        asignaciones.append({
+            "pyme_id": pyme.id,
+            "monto_asignado": fraccion,
+            "retorno_pyme": comision_pyme
+        })
+        
+    return asignaciones
+```[cite: 1]
+
+**2. Matriz de Tiempos y Plazos**
+* **Cola de Espera:**
+  $$\text{Plazo (Meses)} = \text{Base}(1) + \left( \frac{\text{Monto Total}}{\text{Disponibilidad PYMEs en temporada}} \right) \times \text{Factor Estacional}$$
+* **Escala:** Ajustar la variable entre 1 mes (baja demanda/verano) y 6 meses (alta saturación de cola)[cite: 1].
+
+---
+
+### Phase 4: Seguridad y Anonimización (Mock System)
+
+* **Capa Middleware Anónima:** Implementar un mapeo ciego de IDs para abstraer la relación direct $Cliente \rightarrow PYME$ (Cliente ve "Transacción #849", PYME ve "Cobro Pendiente #849")[cite: 1].
+* **Validación de CUIT:** Regex/Validación local para asegurar que un CUIT fiscal pertenezca a una única PYME activa[cite: 1].
+
+---
+
+### Phase 5: Checklist para la Entrega Académica
+
+* [ ] **Footer Disclaimer:** Agregar leyenda visible: *"Proyecto ficticio de simulación para materia de desarrollo web."*
+* [ ] **Seed Data:** Cargar la base de datos con al menos 10 PYMEs de prueba con capacidades variables.
+* [ ] **Flujo Completo:** 
+  1. Ingresar a la web de apuestas[cite: 1].
+  2. Depositar un monto terminado en `.125`[cite: 1].
+  3. Visualizar el cálculo automatizado de comisiones y la asignación en la cola de esperas (1-6 meses)[cite: 1].
+  4. Iniciar sesión como PYME y simular la acreditación del saldo[cite: 1].

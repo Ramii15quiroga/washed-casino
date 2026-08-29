@@ -1,0 +1,15 @@
+# Dependencias de Node
+node_modules/
+
+# Base de datos local (se regenera al iniciar el servidor)
+backend/washed.db
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Variables de entorno
+.env
+
+# Logs
+*.log

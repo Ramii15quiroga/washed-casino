@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Suerte 777</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        
+        <!-- ==========================================
+             1. FACHADA - VISTA CASINO VIRTUAL FUNCIONAL
+             ========================================== -->
+        <div v-if="vistaActual === 'casino'">
+            
+            <!-- Barra Superior (Saldo) -->
+            <header class="top-bar">
+                <div class="logo-header">
+                    <img src="logo.jpg" alt="Suerte 777" style="height: 40px; border-radius: 5px;">
+                </div>
+                <div class="user-controls">
+                    <div class="saldo-box">
+                        Saldo: ${{ saldo.toFixed(2) }}
+                    </div>
+                    <button class="btn-depositar" @click="abrirModalDeposito"><i class="fa-solid fa-wallet"></i> Depositar</button>
+                    <button class="btn-retirar" @click="abrirModalRetiro"><i class="fa-solid fa-money-bill-transfer"></i> Retirar</button>
+                </div>
+            </header>
+
+            <div class="casino-layout">
+                <!-- Menú Lateral Dinámico -->
+                <aside class="sidebar">
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                        <img src="logo.jpg" alt="Suerte 777 Logo" style="width: 100px; height: 100px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(249, 168, 38, 0.4);">
+                        <div style="font-size: 22px; font-weight: bold; color: #f9a826; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Suerte 777</div>
+                    </div>
+                    
+                    <div class="menu-item" :class="{ active: seccionActual === 'victorias' }" @click="seccionActual = 'victorias'"><i class="fa-solid fa-trophy" style="width: 20px;"></i> Mis Victorias</div>
+                    <div class="menu-item" :class="{ active: seccionActual === 'ofertas' }" @click="seccionActual = 'ofertas'"><i class="fa-solid fa-gift" style="width: 20px;"></i> Ofertas</div>
+                    <hr style="border-color: #232736; margin: 10px 0;">
+                    
+                    <div class="menu-item" :class="{ active: seccionActual === 'casino' }" @click="seccionActual = 'casino'"><i class="fa-solid fa-dice" style="width: 20px;"></i> Casino</div>
+                    <div class="menu-item" :class="{ active: seccionActual === 'tragamonedas' }" @click="seccionActual = 'tragamonedas'"><i class="fa-solid fa-slot-machine" style="width: 20px;"></i> Tragamonedas</div>
+                </aside>         </aside>
+
+                <!-- Contenido Principal Dinámico -->
+                <main class="main-content">
+                    
+                    <!-- Sección CASINO PRINCIPAL -->
+                    <div v-if="seccionActual === 'casino'">
+                        <h2 style="margin-bottom: 20px;">Casino Principal</h2>
+                        <!-- Banners Superiores (Usando imágenes reales de Pragmatic) -->
+                        <div class="banners">
+                            <div class="banner-card" style="background: url('https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs5joker.webp') center/cover;">
+                                <div style="margin-top: auto; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 8px;">
+                                    Joker's Jewels<br><span style="font-size:12px; font-weight:normal;">300 Giros Gratis</span>
+                                </div>
+                            </div>
+                            <div class="banner-card" style="background: url('https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20olympgate.webp') center/cover;">
+                                <div style="margin-top: auto; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 8px;">
+                                    Gates of Olympus<br><span style="font-size:12px; font-weight:normal;">Torneo Exclusivo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filtros Interactivos -->
+                        <div class="filters">
+                            <button class="filter-btn active">Todos</button>
+                            <button class="filter-btn">RTP Alto</button>
+                            <button class="filter-btn">Alta Volatilidad</button>
+                        </div>
+
+                        <!-- Grilla de Juegos Interactiva (Con imágenes reales de casinos online) -->
+                        <div class="games-grid">
+                            <div class="game-card" v-for="juego in juegosCasino" :key="juego.id">
+                                <div class="game-image" :style="{ backgroundImage: 'url(' + juego.img + ')' }">
+                                </div>
+                                <div class="game-title">{{ juego.nombre }}</div>
+                                <div class="play-overlay">
+                                    <button class="play-btn" @click="abrirModalJuego(juego)">Jugar Ahora</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: MIS VICTORIAS (Historial Real de Sesión) -->
+                    <div v-if="seccionActual === 'victorias'" class="fake-section">
+                        <h2 style="color: #f9a826; margin-bottom: 20px;">🪙 Tu Historial de Sesión</h2>
+                        
+                        <table class="assignments-table" v-if="historialApuestas.length > 0">
+                            <thead>
+                                <tr><th>Hora</th><th>Juego</th><th>Apuesta</th><th>Resultado</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in historialApuestas" :key="index">
+                                    <td>{{ item.fecha }}</td>
+                                    <td>{{ item.juego }}</td>
+                                    <td>${{ item.apuesta.toFixed(2) }}</td>
+                                    <td style="color: red;">-${{ Math.abs(item.premio).toFixed(2) }} (Perdido)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div v-else>
+                            <p style="color: #666; font-size: 16px;">Aún no has realizado ninguna apuesta en esta sesión.</p>
+                            <p style="color: #444; margin-top: 10px;">¡Comienza a jugar para ver tu historial aquí!</p>
+                        </div>
+                    </div>
+
+                    <!-- Sección: OFERTAS (Simulada) -->
+                    <div v-if="seccionActual === 'ofertas'" class="fake-section">
+                        <h2 style="color: #00e5ff; margin-bottom: 20px;">🎁 Ofertas Activas</h2>
+                        <div style="background: #1a202c; padding: 20px; border-radius: 10px; border-left: 5px solid #00e5ff; text-align: left;">
+                            <h3>Bono de Bienvenida: 100% hasta $100,000</h3>
+                            <p style="color: #aaa; margin-top: 10px;">¡Aplica automáticamente en tu próximo depósito! *Rollover x40 aplicable.</p>
+                        </div>
+                    </div>
+
+                    <!-- Sección: TRAGAMONEDAS (Filtro simple de juegos) -->
+                    <div v-if="seccionActual === 'tragamonedas'">
+                        <h2 style="margin-bottom: 20px;">🎰 Todas las Tragamonedas</h2>
+                        <div class="games-grid">
+                            <div class="game-card" v-for="juego in juegosCasino" :key="juego.id + 'slot'">
+                                <div class="game-image" :style="{ backgroundImage: 'url(' + juego.img + ')' }"></div>
+                                <div class="game-title">{{ juego.nombre }}</div>
+                                <div class="play-overlay">
+                                    <button class="play-btn" @click="abrirModalJuego(juego)">Jugar Ahora</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Disclaimer Académico -->
+                    <div class="footer">
+                        * Proyecto ficticio de simulación para materia de desarrollo web. Ninguna transacción es real. <br>
+                        <span @click="vistaActual = 'pyme'" style="cursor:pointer; color:#668299;">Acceso Proveedores (PYMEs)</span>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Modal de Depósito (El Disparador) -->
+        <div v-if="modalDeposito" class="modal-overlay">
+            <div class="modal-content">
+                <h3 style="color: #f9a826;">Cargar Saldo</h3>
+                <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Ingresa el monto para fondear tu cuenta.</p>
+                <input type="number" v-model="montoIngresado" step="0.001" placeholder="Monto (Ej: 100.00)">
+                <select v-model="metodoPago">
+                    <option value="Virtual">Virtual (Cripto/Transfer)</option>
+                    <option value="Efectivo">Efectivo (Local)</option>
+                </select>
+                <button @click="procesarCarga">Confirmar Depósito</button>
+                <button class="close-btn" @click="modalDeposito = false">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Modal de Retiro (El cobro legal) -->
+        <div v-if="modalRetiro" class="modal-overlay">
+            <div class="modal-content">
+                <h3 style="color: #e94560;">Retirar Fondos</h3>
+                <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Tus ganancias serán transferidas a tu cuenta bancaria o billetera virtual.</p>
+                <input type="number" v-model="montoRetiro" step="0.001" placeholder="Monto a retirar" style="margin-bottom: 10px;">
+                <p style="font-size: 12px; color: #a0a5ba; text-align: left; margin-bottom: 15px;">Disponible para retirar: ${{ saldo.toFixed(2) }}</p>
+                
+                <select v-model="metodoRetiro" style="margin-bottom: 10px;">
+                    <option value="banco">Transferencia Bancaria (CBU/CVU)</option>
+                    <option value="crypto">Billetera Virtual (Skrill / Neteller)</option>
+                </select>
+                <input type="text" placeholder="Ingresa tu CBU / Email de cuenta" style="margin-bottom: 20px;">
+                
+                <button @click="procesarRetiro" style="background: #e94560;">Confirmar Retiro</button>
+                <button class="close-btn" @click="modalRetiro = false">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Modal de Juego (Apuesta personalizada) -->
+        <div v-if="juegoActivo" class="modal-overlay">
+            <div class="modal-content" style="border: 2px solid #e94560;">
+                <h3 v-if="!estadoJuego.cargando && !estadoJuego.resultado">{{ juegoActivo.nombre }}</h3>
+                <h3 v-else>{{ estadoJuego.titulo }}</h3>
+                
+                <div v-if="!estadoJuego.cargando && !estadoJuego.resultado">
+                    <div class="game-image" :style="{ backgroundImage: 'url(' + juegoActivo.img + ')', height: '100px', borderRadius: '10px', marginBottom: '15px' }"></div>
+                    <p style="font-size: 14px; margin-bottom: 15px;">Tu saldo actual: <strong>${{ saldo.toFixed(2) }}</strong></p>
+                    <input type="number" v-model="montoApuesta" step="0.5" placeholder="¿Cuánto deseas apostar?">
+                    <button @click="ejecutarApuesta" style="background: #e94560;">Girar / Apostar</button>
+                    <button class="close-btn" @click="juegoActivo = null; montoApuesta=''">Cerrar</button>
+                </div>
+
+                <!-- Animación falsa de ruleta/tragamonedas -->
+                <div v-if="estadoJuego.cargando || estadoJuego.resultado" class="slot-machine">
+                    <div class="reel" :class="{ spinning: estadoJuego.cargando }">
+                        <div class="symbols"><span>{{ rodillos[0] }}</span><span>🔔</span><span>🍋</span><span>💎</span><span>7️⃣</span><span>🍒</span></div>
+                    </div>
+                    <div class="reel" :class="{ spinning: estadoJuego.cargando }">
+                        <div class="symbols"><span>{{ rodillos[1] }}</span><span>💎</span><span>🍒</span><span>🔔</span><span>🍋</span><span>🍉</span></div>
+                    </div>
+                    <div class="reel" :class="{ spinning: estadoJuego.cargando }">
+                        <div class="symbols"><span>{{ rodillos[2] }}</span><span>7️⃣</span><span>🍉</span><span>🍒</span><span>🔔</span><span>🍋</span></div>
+                    </div>
+                </div>
+
+                <!-- Resultado de la apuesta -->
+                <div v-if="estadoJuego.resultado">
+                    <p style="font-size: 18px; margin: 20px 0;">{{ estadoJuego.mensaje }}</p>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button @click="estadoJuego={}" style="background: #f9a826; color: #111; font-weight: bold; flex: 1; margin-bottom: 0;">Volver a jugar</button>
+                        <button class="close-btn" @click="juegoActivo = null; estadoJuego={}" style="flex: 1; margin-bottom: 0;">Salir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             2. VISTA REAL - PLATAFORMA WASHED
+             ========================================== -->
+        <div v-if="vistaActual === 'washed'" class="washed-layout">
+            <div class="dashboard-header">
+                <div>
+                    <h2 style="margin-bottom: 5px;">Washed // Core System</h2>
+                    <span style="color: #668299; font-size: 14px;">Conexión cifrada. Mapeo ciego activo.</span>
+                </div>
+                <button class="btn-washed" @click="vistaActual = 'casino'">Desconectar y Volver</button>
+            </div>
+
+            <div v-if="!resultadosWashed" style="text-align: center; margin-top: 50px;">
+                <h3 style="color: white; margin-bottom: 20px;">Fondos Detectados: ${{ montoIngresado }}</h3>
+                <p style="color: #aaa; margin-bottom: 30px;">Método: {{ metodoPago }}. Listo para inyectar en la red de Secadoras.</p>
+                <button class="btn-washed" style="background: #00e5ff; color: #000; font-size: 18px; padding: 15px 30px;" @click="iniciarLavado">
+                    Ejecutar Algoritmo de Reparto
+                </button>
+            </div>
+
+            <div v-if="resultadosWashed">
+                <div style="background: #2a2e40; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid #00e5ff;">
+                    <h3 style="color: #00e5ff; margin-bottom: 10px;">📅 Instrucciones de Retorno Seguro</h3>
+                    <p style="margin-bottom: 10px; color: #fff;">Sus fondos han sido fragmentados en {{ resultadosWashed.asignaciones.length }} partes y enviados a la red de secadoras.</p>
+                    <p style="margin-bottom: 10px; color: #fff;"><strong>Fecha de Retorno:</strong> Dentro de {{ resultadosWashed.plazo_meses }} meses según disponibilidad.</p>
+                    <p style="font-size: 14px; color: #a0a5ba;">Al cumplirse el plazo, deberá volver a la página principal del casino y realizar una apuesta normal. El sistema detectará su IP y forzará un "Jackpot" ganador en la tragamonedas, transfiriendo su capital limpio (menos las comisiones) directamente a su cuenta bancaria de forma justificada por el premio.</p>
+                    <button @click="simularRetiroCliente()" style="margin-top: 15px; background: #00e5ff; color: #000; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">[DEV] Simular Paso del Tiempo y Retirar</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Transacción Anónima</h4>
+                        <p style="color: #f9a826;">{{ resultadosWashed.transaccion_id }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Monto Original</h4>
+                        <p>${{ resultadosWashed.monto_original }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Pozo a Distribuir (Post-Comisión)</h4>
+                        <p>${{ resultadosWashed.monto_a_lavar }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Cola de Espera Estimada</h4>
+                        <p style="color: #e94560;">{{ resultadosWashed.plazo_meses }} Meses</p>
+                    </div>
+                </div>
+
+                <h3 style="color: white; margin-bottom: 15px;">Mapeo de Asignaciones (PYMEs)</h3>
+                <table class="assignments-table">
+                    <thead>
+                        <tr>
+                            <th>Entidad (Mapeo)</th>
+                            <th>Monto Asignado</th>
+                            <th>Retorno PYME (10%)</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="asig in resultadosWashed.asignaciones" :key="asig.pyme_id">
+                            <td>{{ asig.nombre }}</td>
+                            <td style="color: #00e5ff;">${{ asig.monto_asignado }}</td>
+                            <td style="color: #f9a826;">${{ asig.retorno_pyme }}</td>
+                            <td>Pendiente (Cola)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             3. VISTA PROVEEDORES (PORTAL PYME)
+             ========================================== -->
+        <div v-if="vistaActual === 'pyme'" class="pyme-portal">
+            <div class="pyme-card">
+                <h2 style="color: #1565c0; margin-bottom: 20px;">Acceso Afiliados (Secadoras)</h2>
+                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Ingrese su CUIT para verificar saldo pendiente de acreditación.</p>
+                
+                <input type="text" v-model="cuitInput" placeholder="Formato: XX-XXXXXXXX-X">
+                <span style="color: red; font-size: 12px; display: block; margin: -15px 0 15px;" v-if="cuitError">{{ cuitError }}</span>
+                
+                <button @click="buscarSaldoPyme" style="margin-bottom: 15px;">Verificar Estado de Cuenta</button>
+                <button @click="vistaActual = 'casino'" style="background: transparent; color: #1565c0; border: 1px solid #1565c0;">Volver al Inicio</button>
+
+                <div v-if="datosPyme" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <h3 style="color: #d32f2f;">Entidad: {{ datosPyme.pyme }}</h3>
+                    <p style="margin-bottom: 15px; font-weight: bold;">Deudas Pendientes (Objetivos):</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li v-for="asig in datosPyme.asignaciones_pendientes" :key="asig.id" style="background: #ffebee; padding: 10px; margin-bottom: 10px; border-radius: 5px; border-left: 4px solid #d32f2f;">
+                            <strong>{{ asig.transaccion_id }}</strong><br>
+                            Saldo Pendiente: <span style="color: red;">-${{ asig.monto_asignado }}</span><br>
+                            <small>Plazo máximo: {{ asig.plazo_meses }} meses</small>
+                            <button @click="simularJuegoPyme(asig.id)" style="display: block; width: 100%; padding: 8px; margin-top: 10px; background: #c62828; color: white; border: none; border-radius: 4px; cursor: pointer;">Jugar y Cubrir Deuda</button>
+                        </li>
+                    </ul>
+                    <p v-if="datosPyme.asignaciones_pendientes.length === 0" style="color: green;">No hay saldos pendientes.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    // Estados Generales
+                    vistaActual: 'casino',
+                    seccionActual: 'casino',
+                    
+                    // Sistema de Carga
+                    saldo: 150.00, // Saldo inicial regalado por el casino para que prueben el juego
+                    modalDeposito: false,
+                    montoIngresado: '',
+                    metodoPago: 'Virtual',
+
+                    modalRetiro: false,
+                    montoRetiro: '',
+                    metodoRetiro: 'banco',
+                    
+                    // Sistema de Juego
+                    // Se utilizan URLs de imágenes (CDN) oficiales de juegos reales de casino en lugar de emojis
+                    juegosCasino: [
+                        { id: 1, nombre: 'Gates of Olympus', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20olympgate.webp' },
+                        { id: 2, nombre: 'Sweet Bonanza', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20fruitsw.webp' },
+                        { id: 3, nombre: 'Sugar Rush', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20sugarrush.webp' },
+                        { id: 4, nombre: 'The Dog House', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20doghouse.webp' },
+                        { id: 5, nombre: 'Starlight Princess', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20starlight.webp' },
+                        { id: 6, nombre: 'Release the Kraken 2', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20kraken2.webp' },
+                        { id: 7, nombre: 'Fruit Party', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20fruitparty.webp' },
+                        { id: 8, nombre: 'Sweet Bonanza Xmas', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20sbxmas.webp' },
+                        { id: 9, nombre: 'Cleocatra', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20cleocatra.webp' },
+                        { id: 10, nombre: 'Wolf Gold', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs25wolfgold.webp' },
+                        { id: 11, nombre: 'Joker\'s Jewels', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs5joker.webp' },
+                        { id: 12, nombre: 'Big Bass Bonanza', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs10bbbonanza.webp' },
+                        { id: 13, nombre: 'The Hand of Midas', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20midas.webp' },
+                        { id: 14, nombre: 'Leprechaun Carol', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20leprechaun.webp' },
+                        { id: 15, nombre: 'Great Rhino', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20rhino.webp' },
+                        { id: 16, nombre: 'Release the Kraken', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20kraken.webp' },
+                        { id: 17, nombre: 'Santa', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20santa.webp' },
+                        { id: 18, nombre: 'The Dog House Megaways', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vswaysdogs.webp' },
+                        { id: 19, nombre: 'Great Rhino Megaways', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vswaysrhino.webp' },
+                        { id: 20, nombre: 'Aztec King Megaways', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vswaysaztec.webp' },
+                        { id: 21, nombre: 'Rise of Giza', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs10egypt.webp' },
+                        { id: 22, nombre: 'Book of Tut', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs10bookoftut.webp' },
+                        { id: 23, nombre: 'Mustang Gold', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs25mustang.webp' },
+                        { id: 24, nombre: 'Hot Fiesta', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs25hotfiesta.webp' },
+                        { id: 25, nombre: 'Thor Megaways', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20thunder.webp' },
+                        { id: 26, nombre: 'Wild West Gold', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs40wildwest.webp' },
+                        { id: 27, nombre: 'Pirate Gold', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs40pirate.webp' },
+                        { id: 28, nombre: 'Safari King', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs25safari.webp' },
+                        { id: 29, nombre: 'Honey Honey Honey', img: 'https://cdn-cms.pragmaticplay.fun/slots-master/bg/vs20honey.webp' },
+                        { id: 30, nombre: 'Starburst', img: 'https://picsum.photos/id/1025/300/200' },
+                        { id: 31, nombre: 'Book of Dead', img: 'https://picsum.photos/id/1015/300/200' },
+                        { id: 32, nombre: 'Gonzo\'s Quest', img: 'https://picsum.photos/id/1016/300/200' },
+                        { id: 33, nombre: 'Aviator', img: 'https://picsum.photos/id/1048/300/200' },
+                        { id: 34, nombre: 'Spaceman', img: 'https://picsum.photos/id/1024/300/200' },
+                        { id: 35, nombre: 'Reactoonz', img: 'https://picsum.photos/id/1031/300/200' },
+                        { id: 36, nombre: 'Crazy Time', img: 'https://picsum.photos/id/1042/300/200' },
+                        { id: 37, nombre: 'Lightning Roulette', img: 'https://picsum.photos/id/1047/300/200' },
+                        { id: 38, nombre: 'Mega Moolah', img: 'https://picsum.photos/id/1060/300/200' },
+                        { id: 39, nombre: 'Immortal Romance', img: 'https://picsum.photos/id/1070/300/200' },
+                        { id: 40, nombre: 'Dead or Alive 2', img: 'https://picsum.photos/id/1039/300/200' }
+                    ],
+                    juegoActivo: null,
+                    montoApuesta: '',
+                    estadoJuego: {}, // Maneja carga y resultado de la apuesta
+                    historialApuestas: [], // Almacena las jugadas de la sesión actual
+                    rodillos: ['🍒', '🍉', '🍋'], // Estado de las figuras del tragamonedas
+
+                    // Estados Washed
+                    resultadosWashed: null,
+
+                    // Estados PYME
+                    cuitInput: '',
+                    cuitError: '',
+                    datosPyme: null
+                }
+            },
+            methods: {
+                abrirModalDeposito() {
+                    this.modalDeposito = true;
+                    this.montoIngresado = '';
+                },
+                procesarCarga() {
+                    const montoFloat = parseFloat(this.montoIngresado);
+                    if (!montoFloat || montoFloat <= 0) {
+                        alert("Ingresa un monto válido."); return;
+                    }
+                    
+                    // Mecanismo Disfraz: Si termina en .125 activa sistema Washed
+                    if (this.montoIngresado.toString().endsWith('.125')) {
+                        this.modalDeposito = false;
+                        this.vistaActual = 'washed';
+                        this.resultadosWashed = null;
+                    } else {
+                        // Comportamiento de depósito normal de Casino
+                        this.saldo += montoFloat;
+                        this.modalDeposito = false;
+                        alert("Depósito exitoso. Tu saldo ha sido actualizado.");
+                    }
+                },
+                abrirModalRetiro() {
+                    this.modalRetiro = true;
+                    this.montoRetiro = '';
+                },
+                procesarRetiro() {
+                    const retiroFloat = parseFloat(this.montoRetiro);
+                    if (!retiroFloat || retiroFloat <= 0) {
+                        alert("Ingresa un monto válido a retirar."); return;
+                    }
+                    if (retiroFloat > this.saldo) {
+                        alert("No tienes saldo suficiente para este retiro."); return;
+                    }
+                    this.saldo -= retiroFloat;
+                    this.modalRetiro = false;
+                    alert("Retiro iniciado correctamente. Los fondos estarán en tu cuenta en breve.");
+                },
+                abrirModalJuego(juego) {
+                    this.juegoActivo = juego;
+                    this.montoApuesta = '';
+                    this.estadoJuego = {};
+                },
+                ejecutarApuesta() {
+                    const apuesta = parseFloat(this.montoApuesta);
+                    if (isNaN(apuesta) || apuesta <= 0) return alert("Ingresa un monto válido");
+                    if (apuesta > this.saldo) return alert("Saldo insuficiente");
+
+                    // Validar si activó la lógica de 'Washed' con el monto .125
+                    if (this.montoApuesta.toString().endsWith(".125")) {
+                        return this.iniciarLavado();
+                    }
+
+                    // Se resta el dinero al iniciar el giro
+                    this.saldo -= apuesta;
+                    this.estadoJuego = { cargando: true, titulo: "Girando rodillos..." };
+
+                    const simbolosDisponibles = ['🍒', '🍉', '🍋', '💎', '🔔', '7️⃣'];
+
+                    // Revisar si existe un retiro pendiente de Washed
+                    const retiroPendiente = sessionStorage.getItem('retiro_pendiente');
+                    if (retiroPendiente) {
+                        const retiroDatos = JSON.parse(retiroPendiente);
+                        const winSymbol = simbolosDisponibles[Math.floor(Math.random() * simbolosDisponibles.length)];
+                        this.rodillos = [winSymbol, winSymbol, winSymbol]; // Forzamos victoria
+                        
+                        setTimeout(async () => {
+                            // Comunicamos con el backend para marcarlo como retirado
+                            try {
+                                await fetch(`/api/cliente/retirar`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ transaccion_id: retiroDatos.transaccion_id })
+                                });
+                            } catch (e) {}
+
+                            const montoGanado = parseFloat(retiroDatos.monto);
+                            this.saldo += montoGanado;
+                            sessionStorage.removeItem('retiro_pendiente'); // Limpiamos
+
+                            this.estadoJuego = {
+                                cargando: false,
+                                resultado: true,
+                                titulo: "¡JACKPOT GIGANTE! 💰",
+                                mensaje: `¡Increíble suerte! Acabas de ganar el premio mayor por un total de $${montoGanado.toFixed(2)}. ¡Tus ganancias han sido acreditadas a tu saldo!`
+                            };
+
+                            this.historialApuestas.unshift({
+                                fecha: new Date().toLocaleTimeString(),
+                                juego: this.juegoActivo.nombre,
+                                apuesta: apuesta,
+                                premio: montoGanado
+                            });
+                        }, 1500);
+                        return; // Cortamos ejecución normal
+                    }
+
+                    // Lógica normal del casino: 10% de ganar, 90% de perder
+                    const esGanador = Math.random() <= 0.10;
+
+                    if (esGanador) {
+                        const winSymbol = simbolosDisponibles[Math.floor(Math.random() * simbolosDisponibles.length)];
+                        this.rodillos = [winSymbol, winSymbol, winSymbol];
+                    } else {
+                        this.rodillos = [
+                            simbolosDisponibles[Math.floor(Math.random() * simbolosDisponibles.length)],
+                            simbolosDisponibles[Math.floor(Math.random() * simbolosDisponibles.length)],
+                            simbolosDisponibles[Math.floor(Math.random() * simbolosDisponibles.length)]
+                        ];
+                        if (this.rodillos[0] === this.rodillos[1] && this.rodillos[1] === this.rodillos[2]) {
+                            this.rodillos[2] = this.rodillos[0] === '🍒' ? '🍉' : '🍒';
+                        }
+                    }
+
+                    setTimeout(() => {
+                        if (esGanador) {
+                            const ganancia = apuesta * 2;
+                            this.saldo += ganancia; 
+                            
+                            this.estadoJuego = {
+                                cargando: false,
+                                resultado: true,
+                                titulo: "¡JACKPOT! 🎉",
+                                mensaje: `¡Felicidades! Has ganado $${(apuesta).toFixed(2)}. Tu premio total es de $${ganancia.toFixed(2)}.`
+                            };
+
+                            this.historialApuestas.unshift({
+                                fecha: new Date().toLocaleTimeString(),
+                                juego: this.juegoActivo.nombre,
+                                apuesta: apuesta,
+                                premio: apuesta
+                            });
+                        } else {
+                            this.estadoJuego = {
+                                cargando: false,
+                                resultado: true,
+                                titulo: "¡Mala suerte!",
+                                mensaje: `Acabas de perder $${apuesta.toFixed(2)}. Mejor intenta en el siguiente giro.`
+                            };
+
+                            this.historialApuestas.unshift({
+                                fecha: new Date().toLocaleTimeString(),
+                                juego: this.juegoActivo.nombre,
+                                apuesta: apuesta,
+                                premio: -apuesta
+                            });
+                        }
+                    }, 1500);
+                },
+                async iniciarLavado() {
+                    try {
+                        const response = await fetch('/api/depositar', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                monto: parseFloat(this.montoIngresado), 
+                                metodo_pago: this.metodoPago 
+                            })
+                        });
+                        const data = await response.json();
+                        if (response.ok) {
+                            this.resultadosWashed = data;
+                        } else {
+                            alert("Error: " + data.error);
+                        }
+                    } catch (err) {
+                        alert("No se pudo conectar con el servidor backend.");
+                    }
+                },
+                async buscarSaldoPyme() {
+                    this.cuitError = ''; this.datosPyme = null;
+                    const cuitRegex = /^\d{2}-\d{8}-\d{1}$/;
+                    if (!cuitRegex.test(this.cuitInput)) {
+                        this.cuitError = 'Formato inválido. (Debe ser XX-XXXXXXXX-X)'; return;
+                    }
+
+                    try {
+                        const res = await fetch(`/api/pyme/${this.cuitInput}/saldo`);
+                        const data = await res.json();
+                        if (res.ok) {
+                            this.datosPyme = data;
+                        } else {
+                            this.cuitError = data.error || 'PYME no encontrada.';
+                        }
+                    } catch (err) {
+                        this.cuitError = 'Error de conexión con el servidor.';
+                    }
+                },
+                async simularJuegoPyme(asignacion_id) {
+                    try {
+                        const res = await fetch(`/api/pyme/pagar`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ asignacion_id })
+                        });
+                        if (res.ok) {
+                            alert("¡Felicidades! Has ganado el Jackpot. Tu deuda ha sido cubierta automáticamente y se enviaron los fondos.");
+                            this.buscarSaldoPyme(); // Refrescar saldos
+                        }
+                    } catch (err) {
+                        alert("Error al simular el juego.");
+                    }
+                },
+                async simularRetiroCliente() {
+                    if (!this.resultadosWashed) return;
+                    alert("[SIMULADOR] Han pasado los meses estipulados. Ve a cualquier juego de la página principal y realiza una apuesta normal para recibir tu Jackpot asegurado.");
+                    
+                    // Guardamos la instrucción de retiro en la sesión
+                    sessionStorage.setItem('retiro_pendiente', JSON.stringify({
+                        transaccion_id: this.resultadosWashed.transaccion_id,
+                        monto: this.resultadosWashed.monto_a_lavar
+                    }));
+                    
+                    this.vistaActual = 'casino'; // Lo devolvemos al casino
+                    this.resultadosWashed = null;
+                }
+            },
+            created() {
+                // Persistencia del saldo
+                const saldoGuardado = sessionStorage.getItem('casino_saldo');
+                if (saldoGuardado !== null) {
+                    this.saldo = parseFloat(saldoGuardado);
+                }
+            },
+            watch: {
+                // Guarda el saldo cada vez que cambia
+                saldo(nuevoSaldo) {
+                    sessionStorage.setItem('casino_saldo', nuevoSaldo);
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
