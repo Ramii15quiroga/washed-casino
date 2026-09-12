@@ -12,6 +12,77 @@
     <div id="app">
         
         <!-- ==========================================
+             0. VISTA LOGIN / REGISTRO
+             ========================================== -->
+        <div v-if="vistaActual === 'login'" class="login-page">
+            <!-- Partículas decorativas de fondo -->
+            <div class="login-particles">
+                <span v-for="n in 15" :key="n" class="particle" :style="{ left: (n * 6.5) + '%', animationDelay: (n * 0.3) + 's', animationDuration: (3 + n % 4) + 's' }"></span>
+            </div>
+
+            <div class="login-container">
+                <!-- Logo grande centrado -->
+                <div class="login-logo">
+                    <img src="logo.jpg" alt="Suerte 777">
+                    <p class="login-tagline">Tu suerte empieza aquí</p>
+                </div>
+
+                <!-- Tabs Login / Registro -->
+                <div class="auth-tabs">
+                    <button :class="['auth-tab', { active: modoAuth === 'login' }]" @click="modoAuth = 'login'; authError = ''">Iniciar Sesión</button>
+                    <button :class="['auth-tab', { active: modoAuth === 'registro' }]" @click="modoAuth = 'registro'; authError = ''">Registrarse</button>
+                </div>
+
+                <!-- Mensaje de error -->
+                <div v-if="authError" class="auth-error">
+                    <i class="fa-solid fa-triangle-exclamation"></i> {{ authError }}
+                </div>
+
+                <!-- Formulario LOGIN -->
+                <form v-if="modoAuth === 'login'" class="auth-form" @submit.prevent="procesarLogin">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> Usuario</label>
+                        <input type="text" v-model="loginForm.usuario" placeholder="Tu nombre de usuario" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-lock"></i> Contraseña</label>
+                        <input type="password" v-model="loginForm.password" placeholder="Tu contraseña" required>
+                    </div>
+                    <button type="submit" class="btn-auth">
+                        <i class="fa-solid fa-right-to-bracket"></i> Entrar al Casino
+                    </button>
+                </form>
+
+                <!-- Formulario REGISTRO -->
+                <form v-if="modoAuth === 'registro'" class="auth-form" @submit.prevent="procesarRegistro">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> Usuario</label>
+                        <input type="text" v-model="registroForm.usuario" placeholder="Elige un nombre de usuario" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-envelope"></i> Email</label>
+                        <input type="email" v-model="registroForm.email" placeholder="tu@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-lock"></i> Contraseña</label>
+                        <input type="password" v-model="registroForm.password" placeholder="Mínimo 6 caracteres" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-lock"></i> Confirmar Contraseña</label>
+                        <input type="password" v-model="registroForm.confirmar" placeholder="Repetí tu contraseña" required>
+                    </div>
+                    <button type="submit" class="btn-auth">
+                        <i class="fa-solid fa-user-plus"></i> Crear Cuenta
+                    </button>
+                </form>
+
+                <p class="login-disclaimer">
+                    Al ingresar aceptás los <a href="#" style="color:#f9a826;">Términos y Condiciones</a>. Mayores de 18 años únicamente.
+                </p>
+            </div>
+        </div>
+
+        <!-- ==========================================
              1. FACHADA - VISTA CASINO VIRTUAL FUNCIONAL
              ========================================== -->
         <div v-if="vistaActual === 'casino'">
@@ -22,11 +93,15 @@
                     <img src="logo.jpg" alt="Suerte 777" style="height: 40px; border-radius: 5px;">
                 </div>
                 <div class="user-controls">
+                    <div class="user-badge" v-if="usuarioActual">
+                        <i class="fa-solid fa-circle-user"></i> {{ usuarioActual.usuario }}
+                    </div>
                     <div class="saldo-box">
-                        Saldo: ${{ saldo.toFixed(2) }}
+                        <i class="fa-solid fa-coins"></i> ${{ saldo.toFixed(2) }}
                     </div>
                     <button class="btn-depositar" @click="abrirModalDeposito"><i class="fa-solid fa-wallet"></i> Depositar</button>
                     <button class="btn-retirar" @click="abrirModalRetiro"><i class="fa-solid fa-money-bill-transfer"></i> Retirar</button>
+                    <button class="btn-logout" @click="cerrarSesion" title="Cerrar sesión"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </header>
 
@@ -323,9 +398,16 @@
             data() {
                 return {
                     // Estados Generales
-                    vistaActual: 'casino',
+                    vistaActual: 'login',   // Empieza en el login
                     seccionActual: 'casino',
                     
+                    // Sistema de Autenticación
+                    loginForm: { usuario: '', password: '' },
+                    registroForm: { usuario: '', email: '', password: '', confirmar: '' },
+                    modoAuth: 'login',      // 'login' o 'registro'
+                    authError: '',
+                    usuarioActual: null,    // Datos del usuario logueado
+
                     // Sistema de Carga
                     saldo: 150.00, // Saldo inicial regalado por el casino para que prueben el juego
                     modalDeposito: false,
@@ -396,6 +478,75 @@
                 }
             },
             methods: {
+                // ---- AUTENTICACIÓN ----
+                procesarLogin() {
+                    this.authError = '';
+                    const { usuario, password } = this.loginForm;
+
+                    // Obtener usuarios del localStorage
+                    const usuarios = JSON.parse(localStorage.getItem('casino_usuarios') || '[]');
+                    const encontrado = usuarios.find(u => u.usuario === usuario && u.password === password);
+
+                    if (!encontrado) {
+                        this.authError = 'Usuario o contraseña incorrectos.';
+                        return;
+                    }
+
+                    // Login exitoso: guardamos sesión y vamos al casino
+                    this.usuarioActual = encontrado;
+                    sessionStorage.setItem('casino_sesion', JSON.stringify(encontrado));
+
+                    // Recuperamos el saldo guardado de este usuario
+                    const saldoGuardado = parseFloat(localStorage.getItem(`casino_saldo_${usuario}`) || '150');
+                    this.saldo = saldoGuardado;
+
+                    this.vistaActual = 'casino';
+                },
+                procesarRegistro() {
+                    this.authError = '';
+                    const { usuario, email, password, confirmar } = this.registroForm;
+
+                    if (password.length < 6) {
+                        this.authError = 'La contraseña debe tener al menos 6 caracteres.';
+                        return;
+                    }
+                    if (password !== confirmar) {
+                        this.authError = 'Las contraseñas no coinciden.';
+                        return;
+                    }
+
+                    // Verificar si el usuario ya existe
+                    const usuarios = JSON.parse(localStorage.getItem('casino_usuarios') || '[]');
+                    if (usuarios.find(u => u.usuario === usuario)) {
+                        this.authError = 'Ese nombre de usuario ya está en uso.';
+                        return;
+                    }
+
+                    // Guardar el nuevo usuario
+                    const nuevoUsuario = { usuario, email, password };
+                    usuarios.push(nuevoUsuario);
+                    localStorage.setItem('casino_usuarios', JSON.stringify(usuarios));
+                    localStorage.setItem(`casino_saldo_${usuario}`, '150'); // Bono de bienvenida
+
+                    // Auto-login después del registro
+                    this.usuarioActual = nuevoUsuario;
+                    sessionStorage.setItem('casino_sesion', JSON.stringify(nuevoUsuario));
+                    this.saldo = 150;
+                    this.vistaActual = 'casino';
+                },
+                cerrarSesion() {
+                    // Guardamos el saldo actual antes de cerrar
+                    if (this.usuarioActual) {
+                        localStorage.setItem(`casino_saldo_${this.usuarioActual.usuario}`, this.saldo);
+                    }
+                    sessionStorage.removeItem('casino_sesion');
+                    sessionStorage.removeItem('casino_saldo');
+                    this.usuarioActual = null;
+                    this.loginForm = { usuario: '', password: '' };
+                    this.vistaActual = 'login';
+                },
+                // ---- FIN AUTENTICACIÓN ----
+
                 abrirModalDeposito() {
                     this.modalDeposito = true;
                     this.montoIngresado = '';
@@ -614,16 +765,22 @@
                 }
             },
             created() {
-                // Persistencia del saldo
-                const saldoGuardado = sessionStorage.getItem('casino_saldo');
-                if (saldoGuardado !== null) {
-                    this.saldo = parseFloat(saldoGuardado);
+                // Restaurar sesión activa si el usuario ya estaba logueado
+                const sesionGuardada = sessionStorage.getItem('casino_sesion');
+                if (sesionGuardada) {
+                    this.usuarioActual = JSON.parse(sesionGuardada);
+                    // Recuperar el saldo guardado de este usuario en localStorage
+                    const saldoUser = localStorage.getItem(`casino_saldo_${this.usuarioActual.usuario}`);
+                    this.saldo = saldoUser !== null ? parseFloat(saldoUser) : 150;
+                    this.vistaActual = 'casino'; // Lo mandamos directo al casino
                 }
             },
             watch: {
-                // Guarda el saldo cada vez que cambia
+                // Guarda el saldo en localStorage vinculado al usuario cada vez que cambia
                 saldo(nuevoSaldo) {
-                    sessionStorage.setItem('casino_saldo', nuevoSaldo);
+                    if (this.usuarioActual) {
+                        localStorage.setItem(`casino_saldo_${this.usuarioActual.usuario}`, nuevoSaldo);
+                    }
                 }
             }
         }).mount('#app');

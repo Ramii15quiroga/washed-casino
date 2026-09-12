@@ -356,3 +356,185 @@ body {
 
 .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; border-top: 1px solid #232736; margin-top: 40px; }
 .footer span { cursor: pointer; text-decoration: underline; }
+
+/* =========================================
+   VISTA LOGIN / REGISTRO
+   ========================================= */
+.login-page {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at top, #1a1f35 0%, #0b0e14 60%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-particles {
+    position: absolute;
+    width: 100%; height: 100%;
+    top: 0; left: 0;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    bottom: -20px;
+    width: 8px; height: 8px;
+    background: #f9a826;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: float-up linear infinite;
+}
+
+.particle:nth-child(even) {
+    background: #00e5ff;
+    width: 5px; height: 5px;
+}
+
+@keyframes float-up {
+    0%   { bottom: -20px; opacity: 0.4; transform: translateX(0) scale(1); }
+    100% { bottom: 110vh;  opacity: 0;  transform: translateX(30px) scale(0.5); }
+}
+
+.login-container {
+    position: relative;
+    z-index: 10;
+    background: rgba(22, 25, 37, 0.95);
+    border: 1px solid #2d3748;
+    border-radius: 20px;
+    padding: 40px;
+    width: 420px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 40px rgba(249, 168, 38, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.login-logo { text-align: center; margin-bottom: 30px; }
+
+.login-logo img {
+    width: 130px;
+    height: 130px;
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(249, 168, 38, 0.5);
+    animation: glow-logo 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow-logo {
+    from { box-shadow: 0 0 20px rgba(249, 168, 38, 0.4); }
+    to   { box-shadow: 0 0 45px rgba(249, 168, 38, 0.8); }
+}
+
+.login-tagline { color: #a0a5ba; font-size: 14px; margin-top: 10px; letter-spacing: 1px; }
+
+.auth-tabs {
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #2d3748;
+    margin-bottom: 25px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    color: #a0a5ba;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.auth-tab.active { background: linear-gradient(90deg, #f9a826, #ffb703); color: #000; }
+.auth-tab:hover:not(.active) { background: #2a2e40; color: white; }
+
+.auth-error {
+    background: rgba(233, 69, 96, 0.15);
+    border: 1px solid #e94560;
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #e94560;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+
+.form-group label { font-size: 13px; color: #a0a5ba; font-weight: 600; }
+.form-group label i { margin-right: 6px; color: #f9a826; }
+
+.form-group input {
+    background: #0f111a;
+    border: 1px solid #2d3748;
+    border-radius: 10px;
+    padding: 12px 15px;
+    color: white;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #f9a826;
+    box-shadow: 0 0 8px rgba(249, 168, 38, 0.3);
+}
+
+.btn-auth {
+    background: linear-gradient(90deg, #f9a826, #ffb703);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(249, 168, 38, 0.4);
+    margin-top: 5px;
+}
+
+.btn-auth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(249, 168, 38, 0.6);
+}
+
+.login-disclaimer { text-align: center; color: #454b66; font-size: 11px; margin-top: 20px; }
+
+.user-badge {
+    background: #2a2e40;
+    border: 1px solid #454b66;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: #f9a826;
+    font-weight: 600;
+}
+
+.user-badge i { margin-right: 5px; }
+
+.btn-logout {
+    background: transparent;
+    border: 1px solid #454b66;
+    color: #a0a5ba;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-logout:hover {
+    background: #e94560;
+    border-color: #e94560;
+    color: white;
+}
+
