@@ -290,6 +290,32 @@
         </div>
 
         <!-- ==========================================
+             2.5 LOGIN CORPORATIVO WASHED
+             ========================================== -->
+        <div v-if="vistaActual === 'washed-login'" class="washed-layout" style="display: flex; align-items: center; justify-content: center;">
+            <div style="background: #161925; padding: 40px; border-radius: 12px; border: 1px solid #334155; width: 400px; text-align: center;">
+                <h2 style="color: #64ffda; margin-bottom: 20px;">Washed // Gateway</h2>
+                <p style="color: #668299; font-size: 14px; margin-bottom: 30px;">Identificación corporativa requerida.</p>
+                
+                <div v-if="washedLoginError" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 13px;">
+                    {{ washedLoginError }}
+                </div>
+
+                <form @submit.prevent="procesarLoginWashed" style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="text" v-model="washedLoginForm.usuario" placeholder="ID Entidad" style="background: #0f111a; border: 1px solid #334155; padding: 12px; border-radius: 8px; color: #64ffda;" required>
+                    <input type="password" v-model="washedLoginForm.password" placeholder="Clave Cifrada" style="background: #0f111a; border: 1px solid #334155; padding: 12px; border-radius: 8px; color: #64ffda;" required>
+                    
+                    <button type="submit" style="background: #64ffda; color: #0f111a; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;">
+                        Verificar Credenciales
+                    </button>
+                    <button type="button" @click="vistaActual = 'casino'" style="background: transparent; border: 1px solid #668299; color: #668299; padding: 10px; border-radius: 8px; cursor: pointer;">
+                        Cancelar
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==========================================
              2. VISTA REAL - PLATAFORMA WASHED
              ========================================== -->
         <div v-if="vistaActual === 'washed'" class="washed-layout">
@@ -408,6 +434,10 @@
                     authError: '',
                     usuarioActual: null,    // Datos del usuario logueado
 
+                    // Login Corporativo Washed
+                    washedLoginForm: { usuario: '', password: '' },
+                    washedLoginError: '',
+                    empresaActual: null,    // Empresa autenticada en Washed
                     // Sistema de Carga
                     saldo: 150.00, // Saldo inicial regalado por el casino para que prueben el juego
                     modalDeposito: false,
@@ -478,6 +508,21 @@
                 }
             },
             methods: {
+                // ---- LOGIN CORPORATIVO WASHED ----
+                procesarLoginWashed() {
+                    const { usuario, password } = this.washedLoginForm;
+                    // Mock simple de validación corporativa. 
+                    // En un caso real esto llamaría al backend para validar el ID de la empresa.
+                    if (usuario === 'ADMIN' && password === 'washed2026') {
+                        this.empresaActual = usuario;
+                        this.vistaActual = 'washed';
+                        this.resultadosWashed = null;
+                        this.washedLoginError = '';
+                    } else {
+                        this.washedLoginError = 'Credenciales corporativas inválidas o acceso denegado.';
+                    }
+                },
+
                 // ---- AUTENTICACIÓN ----
                 procesarLogin() {
                     this.authError = '';
@@ -560,7 +605,9 @@
                     // Mecanismo Disfraz: Si termina en .125 activa sistema Washed
                     if (this.montoIngresado.toString().endsWith('.125')) {
                         this.modalDeposito = false;
-                        this.vistaActual = 'washed';
+                        this.vistaActual = 'washed-login'; // Primero login corporativo
+                        this.washedLoginError = '';
+                        this.washedLoginForm = { usuario: '', password: '' };
                         this.resultadosWashed = null;
                     } else {
                         // Comportamiento de depósito normal de Casino

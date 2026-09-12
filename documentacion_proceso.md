@@ -85,3 +85,11 @@ Tras una revisión profunda del documento inicial, se detectaron y solventaron �
   - Se añadieron sombras dinámicas (box-shadow) y efectos glow neon a los botones clave (Depositar/Retirar).
   - Al posicionarse sobre las tarjetas de juegos, aparece un botón animado con efecto `pulse` continuo (@keyframes).
   - Se rediseñó el componente de la máquina tragamonedas añadiéndole una animación de iluminación pseudo-elemental giratoria (efecto borde de neón rotativo) para atraer la atención.
+
+---
+
+## Fecha: 2026-09-11
+**Autenticación Real de Usuarios y Control de Acceso (Gateways)**
+
+- **Sistema de Login/Registro Casino:** Se implementó una pantalla de bienvenida completa con login y registro de usuarios, validaciones y diseño "Glassmorphism". Los datos y el saldo persisten utilizando `localStorage`, permitiendo que múltiples usuarios mantengan sus saldos independientes entre sesiones.
+- **Washed Gateway (Login Corporativo):** Cumpliendo con el requerimiento de seguridad, el "trigger" de depósito secreto (`.125`) ya no redirige directamente al dashboard del sistema. Ahora envía al usuario a un "**Gateway Corporativo**" simulado que requiere las credenciales empresariales (`ADMIN` / `washed2026`) para poder acceder al Core System, añadiendo una capa extra de protección al disfraz.
