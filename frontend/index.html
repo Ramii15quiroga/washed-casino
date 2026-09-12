@@ -439,7 +439,7 @@
                     washedLoginError: '',
                     empresaActual: null,    // Empresa autenticada en Washed
                     // Sistema de Carga
-                    saldo: 150.00, // Saldo inicial regalado por el casino para que prueben el juego
+                    saldo: 0.00, // Inicia sin saldo
                     modalDeposito: false,
                     montoIngresado: '',
                     metodoPago: 'Virtual',
@@ -542,7 +542,7 @@
                     sessionStorage.setItem('casino_sesion', JSON.stringify(encontrado));
 
                     // Recuperamos el saldo guardado de este usuario
-                    const saldoGuardado = parseFloat(localStorage.getItem(`casino_saldo_${usuario}`) || '150');
+                    const saldoGuardado = parseFloat(localStorage.getItem(`casino_saldo_${usuario}`) || '0');
                     this.saldo = saldoGuardado;
 
                     this.vistaActual = 'casino';
@@ -571,12 +571,12 @@
                     const nuevoUsuario = { usuario, email, password };
                     usuarios.push(nuevoUsuario);
                     localStorage.setItem('casino_usuarios', JSON.stringify(usuarios));
-                    localStorage.setItem(`casino_saldo_${usuario}`, '150'); // Bono de bienvenida
+                    localStorage.setItem(`casino_saldo_${usuario}`, '0'); // Sin bono de bienvenida
 
                     // Auto-login después del registro
                     this.usuarioActual = nuevoUsuario;
                     sessionStorage.setItem('casino_sesion', JSON.stringify(nuevoUsuario));
-                    this.saldo = 150;
+                    this.saldo = 0;
                     this.vistaActual = 'casino';
                 },
                 cerrarSesion() {
@@ -818,7 +818,7 @@
                     this.usuarioActual = JSON.parse(sesionGuardada);
                     // Recuperar el saldo guardado de este usuario en localStorage
                     const saldoUser = localStorage.getItem(`casino_saldo_${this.usuarioActual.usuario}`);
-                    this.saldo = saldoUser !== null ? parseFloat(saldoUser) : 150;
+                    this.saldo = saldoUser !== null ? parseFloat(saldoUser) : 0;
                     this.vistaActual = 'casino'; // Lo mandamos directo al casino
                 }
             },
